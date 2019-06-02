@@ -1,0 +1,29 @@
+# ignore extensionless files
+*
+!*/
+!/**/
+!*.*
+
+# ignore dot-files
+.*
+
+# don't ignore these
+!/LICENSE
+!/.editorconfig
+!/.gitattributes
+!/.gitignore
+!*Makefile
+
+# C related
+*.a
+*.d
+*.dll
+*.exe
+*.lib
+*.o
+*.obj
+*.out
+*.so
+
+# Visual Studio
+.vs/

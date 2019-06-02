@@ -1,0 +1,9 @@
+* text=auto
+
+# Source files
+*.c            text eol=lf linguist-language=C
+*.h            text eol=lf linguist-language=C
+.editorconfig  text eol=lf
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+Makefile       text eol=lf
