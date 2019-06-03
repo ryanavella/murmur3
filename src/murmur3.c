@@ -104,7 +104,7 @@ typedef uint64_t     uword64;
 #endif
 
 #ifndef ENDIAN_L_32
-#define ENDIAN_L_32(x)          \
+#define ENDIAN_L_32(x)         \
     (((x)<<24)               | \
     (((x)<<8) & 0x00ff0000u) | \
     (((x)>>8) & 0x0000ff00u) | \
@@ -112,8 +112,8 @@ typedef uint64_t     uword64;
 #endif
 
 #ifndef ENDIAN_L_64
-#define ENDIAN_L_64(x)                   \
-    (((x)<<56)                        | \
+#define ENDIAN_L_64(x)                            \
+    (((x)<<56)                                  | \
     (((x)<<48) & U64_EXPR(0x00ff0000,00000000)) | \
     (((x)<<40) & U64_EXPR(0x0000ff00,00000000)) | \
     (((x)<<32) & U64_EXPR(0x000000ff,00000000)) | \
@@ -143,13 +143,13 @@ typedef uint64_t     uword64;
         h ^= h >> 16;     \
     } while(0)
 
-#define fmix64(h)                        \
-    do {                                 \
-        h ^= h >> 33;                    \
+#define fmix64(h)                           \
+    do {                                    \
+        h ^= h >> 33;                       \
         h *= U64_EXPR(0xff51afd7,ed558ccd); \
-        h ^= h >> 33;                    \
+        h ^= h >> 33;                       \
         h *= U64_EXPR(0xc4ceb9fe,1a85ec53); \
-        h ^= h >> 33;                    \
+        h ^= h >> 33;                       \
     } while(0)
 
 void MurmurHash3_x86_32(const void *key, const int len, uint32_t seed, uint32_t out[1]) {
