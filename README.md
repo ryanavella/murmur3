@@ -1,3 +1,5 @@
+[![License: ODbL](https://img.shields.io/badge/License-Public_Domain-brightgreen.svg)](https://github.com/ryanavella/murmur3/blob/master/LICENSE)
+
 # Murmur3
 
 Murmur3 is a (mostly) C89 compliant port of Austin Appleby's [MurmurHash3](https://github.com/aappleby/smhasher/wiki/MurmurHash3).
