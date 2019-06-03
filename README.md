@@ -11,10 +11,9 @@ the non-native version will be less than optimal.
 
 This implementation is C89 compliant with a few notable exceptions. It
 requires the exact width integer types uint8_t, uint32_t, and uint64_t
-as described in the ISO/IEC 9899:1999 standard, Section 7.18.1.1. It
-also requires UINT64_C as described in Section 7.18.4.1. The macro
-must not use LL to be C89 compliant. The developer must supply their own
-stdint.h header if none is provided by their compiler vendor.
+as described in the ISO/IEC 9899:1999 standard, Section 7.18.1.1. The
+developer must supply their own stdint.h header if none is provided by
+their compiler vendor.
 
 The hash should work on big-endian machines, although I haven't verified this myself.
 As the code is fine-tuned for x86 processors, it will likely be much slower

@@ -13,10 +13,9 @@
  *
  *   This implementation is C89 compliant with a few notable exceptions. It
  *   requires the exact width integer types uint8_t, uint32_t, and uint64_t
- *   as described in the ISO/IEC 9899:1999 standard, Section 7.18.1.1. It
- *   also requires UINT64_C as described in Section 7.18.4.1. The macro must
- *   not use LL to be C89 compliant. The developer must supply their own
- *   stdint.h header if none is provided by their compiler vendor. */
+ *   as described in the ISO/IEC 9899:1999 standard, Section 7.18.1.1. The
+ *   developer must supply their own stdint.h header if none is provided by
+ *   their compiler vendor. */
 
 #include "murmur3.h"
 
@@ -38,13 +37,18 @@ typedef unsigned int uword64;
 typedef uint64_t     uword64;
 #endif
 
+/* U64_EXPR(x, y) takes the upper 32 bits and lower 32 bits (expressed in
+ * hexadecimal, with the latter not including a leading '0x'), and expands
+ * into an unsigned 64-bit integer constant for c99 and greater. For C89/c90,
+ * it instead exapands into an unsigned 64-bit integer constant _expression_,
+ * assuming that a 64-bit type exists.
+ *
+ * Example:
+ *   U64_EXPR(0x12345678,DEADBEEF) == UINT64_C(0x12345678DEADBEEF) */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-#define U64_C(x) UINT64_C(x)
-#elif defined(_MSC_VER)
-/* untested, this may not work with older versions of msvc */
-#define U64_C(x) (x ## i64)
+#define U64_EXPR(x, y) UINT64_C(x ## y)
 #else
-#error "the required suffix for 64-bit integer constants is unknown"
+#define U64_EXPR(x, y) (((uword64)(x ## u) << 32) + 0x ## y ## u)
 #endif
 
 #if defined(_MIPSEL)           || \
@@ -102,12 +106,12 @@ typedef uint64_t     uword64;
 #ifndef ENDIAN_L_64
 #define ENDIAN_L_64(x)                   \
     (((x)<<56)                        | \
-    (((x)<<48) & U64_C(0x00ff000000000000)) | \
-    (((x)<<40) & U64_C(0x0000ff0000000000)) | \
-    (((x)<<32) & U64_C(0x000000ff00000000)) | \
-    (((x)>>32) & U64_C(0x00000000ff000000)) | \
-    (((x)>>40) & U64_C(0x0000000000ff0000)) | \
-    (((x)>>48) & U64_C(0x000000000000ff00)) | \
+    (((x)<<48) & U64_EXPR(0x00ff0000,00000000)) | \
+    (((x)<<40) & U64_EXPR(0x0000ff00,00000000)) | \
+    (((x)<<32) & U64_EXPR(0x000000ff,00000000)) | \
+    (((x)>>32) & U64_EXPR(0x00000000,ff000000)) | \
+    (((x)>>40) & U64_EXPR(0x00000000,00ff0000)) | \
+    (((x)>>48) & U64_EXPR(0x00000000,0000ff00)) | \
      ((x)>>56))
 #endif
 
@@ -131,13 +135,13 @@ typedef uint64_t     uword64;
         h ^= h >> 16;     \
     } while(0)
 
-#define fmix64(h)                 \
-    do {                          \
-        h ^= h >> 33;             \
-        h *= 0xff51afd7ed558ccdu; \
-        h ^= h >> 33;             \
-        h *= 0xc4ceb9fe1a85ec53u; \
-        h ^= h >> 33;             \
+#define fmix64(h)                        \
+    do {                                 \
+        h ^= h >> 33;                    \
+        h *= U64_EXPR(0xff51afd7,ed558ccd); \
+        h ^= h >> 33;                    \
+        h *= U64_EXPR(0xc4ceb9fe,1a85ec53); \
+        h ^= h >> 33;                    \
     } while(0)
 
 void MurmurHash3_x86_32(const void *key, const int len, uint32_t seed, uint32_t out[1]) {
@@ -365,8 +369,8 @@ void MurmurHash3_x64_128(const void *key, const int len, const uint32_t seed, ui
     int i;
     const int nblocks = (unsigned int)len >> 4;
 
-    const uword64 c1 = U64_C(0x87c37b91114253d5);
-    const uword64 c2 = U64_C(0x4cf5ad432745937f);
+    const uword64 c1 = U64_EXPR(0x87c37b91,114253d5);
+    const uword64 c2 = U64_EXPR(0x4cf5ad43,2745937f);
 
     uint64_t h1 = seed;
     uint64_t h2 = seed;
