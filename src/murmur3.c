@@ -152,9 +152,9 @@ typedef uint64_t     uword64;
         h ^= h >> 33;                       \
     } while(0)
 
-void MurmurHash3_x86_32(const void *key, const int len, uint32_t seed, uint32_t out[1]) {
+void MurmurHash3_x86_32(const void *key, unsigned int len, uint32_t seed, uint32_t out[1]) {
     int i;
-    const int nblocks = (unsigned int)len >> 2;
+    const int nblocks = len >> 2;
 
     const uword32 c1 = 0xcc9e2d51u;
     const uword32 c2 = 0x1b873593u;
@@ -202,16 +202,16 @@ void MurmurHash3_x86_32(const void *key, const int len, uint32_t seed, uint32_t 
 
     /* finalization */
 
-    h1 ^= (uword32)len;
+    h1 ^= len;
 
     fmix32(h1);
 
     *(uint32_t *)out = ENDIAN_L_32(h1);
 }
 
-void MurmurHash3_x86_128(const void *key, const int len, uint32_t seed, uint32_t out[4]) {
+void MurmurHash3_x86_128(const void *key, unsigned int len, uint32_t seed, uint32_t out[4]) {
     int i;
-    const int nblocks = (unsigned int)len >> 4;
+    const int nblocks = len >> 4;
 
     const uword32 c1 = 0x239b961bu;
     const uword32 c2 = 0xab0e9789u;
@@ -343,10 +343,10 @@ void MurmurHash3_x86_128(const void *key, const int len, uint32_t seed, uint32_t
 
     /* finalization */
 
-    h1 ^= (uword32)len;
-    h2 ^= (uword32)len;
-    h3 ^= (uword32)len;
-    h4 ^= (uword32)len;
+    h1 ^= len;
+    h2 ^= len;
+    h3 ^= len;
+    h4 ^= len;
 
     h1 += h2;
     h1 += h3;
@@ -373,9 +373,9 @@ void MurmurHash3_x86_128(const void *key, const int len, uint32_t seed, uint32_t
     ((uint32_t *)out)[3] = ENDIAN_L_32(h4);
 }
 
-void MurmurHash3_x64_128(const void *key, const int len, const uint32_t seed, uint64_t out[2]) {
+void MurmurHash3_x64_128(const void *key, unsigned int len, const uint32_t seed, uint64_t out[2]) {
     int i;
-    const int nblocks = (unsigned int)len >> 4;
+    const int nblocks = len >> 4;
 
     const uword64 c1 = U64_EXPR(0x87c37b91,114253d5);
     const uword64 c2 = U64_EXPR(0x4cf5ad43,2745937f);
@@ -475,8 +475,8 @@ void MurmurHash3_x64_128(const void *key, const int len, const uint32_t seed, ui
 
     /* finalization */
 
-    h1 ^= (uword64)len;
-    h2 ^= (uword64)len;
+    h1 ^= len;
+    h2 ^= len;
 
     h1 += h2;
     h2 += h1;

@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 
-void MurmurHash3_x86_32 (const void *key, const int len, uint32_t seed, uint32_t out[1]);
-void MurmurHash3_x86_128(const void *key, const int len, uint32_t seed, uint32_t out[4]);
-void MurmurHash3_x64_128(const void *key, const int len, uint32_t seed, uint64_t out[2]);
+void MurmurHash3_x86_32 (const void *key, unsigned int len, uint32_t seed, uint32_t out[1]);
+void MurmurHash3_x86_128(const void *key, unsigned int len, uint32_t seed, uint32_t out[4]);
+void MurmurHash3_x64_128(const void *key, unsigned int len, uint32_t seed, uint64_t out[2]);
 
 #endif /* MURMUR3_H */

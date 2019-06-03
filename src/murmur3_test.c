@@ -29,7 +29,7 @@ static void MurmurHash3_x86_32_test(uint32_t seed, const char *str_in, const cha
     uint32_t hash[1];
     char buf[33];
 
-    MurmurHash3_x86_32(str_in, (int)strlen(str_in), seed, hash);
+    MurmurHash3_x86_32(str_in, (unsigned int)strlen(str_in), seed, hash);
     hex32(hash, buf);
     if (strcmp(buf, str_expect) != 0) {
         printf("FAIL(line %i): %s != %s\n", __LINE__, str_in, buf);
@@ -42,7 +42,7 @@ static void MurmurHash3_x86_32_test(uint32_t seed, const char *str_in, const cha
 static void MurmurHash3_x86_128_test(uint32_t seed, const char *str_in, const char *str_expect) {
     uint32_t hash[4];
     char buf[33];
-    MurmurHash3_x86_128(str_in, (int)strlen(str_in), seed, hash);
+    MurmurHash3_x86_128(str_in, (unsigned int)strlen(str_in), seed, hash);
     hex128(hash, buf);
     if (strcmp(buf, str_expect) != 0) {
         printf("FAIL(line %i): %s != %s\n", __LINE__, str_in, buf);
@@ -55,7 +55,7 @@ static void MurmurHash3_x86_128_test(uint32_t seed, const char *str_in, const ch
 static void MurmurHash3_x64_128_test(uint32_t seed, const char *str_in, const char *str_expect) {
     uint64_t hash[2];
     char buf[33];
-    MurmurHash3_x64_128(str_in, (int)strlen(str_in), seed, hash);
+    MurmurHash3_x64_128(str_in, (unsigned int)strlen(str_in), seed, hash);
     hex128((uint32_t *)hash, buf);
     if (strcmp(buf, str_expect) != 0) {
         printf("FAIL(line %i): %s != %s\n", __LINE__, str_in, buf);
