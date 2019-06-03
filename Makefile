@@ -5,7 +5,7 @@ CSTD := c99
 OPT := -O3
 DEBUG := -g
 WARNINGS := -Wall -Wextra -Werror -Wpedantic
-WARNINGS += -Wno-cast-align
+WARNINGS += -Wno-cast-align -Wno-unused-macros
 
 DIR_SRC := ./src
 DIR_INCL := ./include
