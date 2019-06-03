@@ -24,6 +24,7 @@
 
 #define INT_CAN_HOLD_32_BITS  ((((UINT_MAX>>1)+1)>>16)>>15 > 0)
 #define INT_CAN_HOLD_64_BITS  ((((((UINT_MAX>>1)+1)>>16)>>16)>>16)>>15 > 0)
+#define LONG_CAN_HOLD_64_BITS ((((((ULONG_MAX>>1)+1)>>16)>>16)>>16)>>15 > 0)
 
 #if INT_CAN_HOLD_32_BITS
 typedef unsigned int uword32;
@@ -47,8 +48,12 @@ typedef uint64_t     uword64;
  *   U64_EXPR(0x12345678,DEADBEEF) == UINT64_C(0x12345678DEADBEEF) */
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #define U64_EXPR(x, y) UINT64_C(x ## y)
+#elif INT_CAN_HOLD_64_BITS
+#define U64_EXPR(x, y) x ## y ## u
+#elif LONG_CAN_HOLD_64_BITS
+#define U64_EXPR(x, y) x ## y ## ul
 #else
-#define U64_EXPR(x, y) (((uword64)(x ## u) << 32) + 0x ## y ## u)
+#define U64_EXPR(x, y) (((uword64)(x ## ul) << 32) + 0x ## y ## ul)
 #endif
 
 #if defined(_MIPSEL)           || \
