@@ -41,8 +41,11 @@ typedef uint64_t     uword64;
 /* U64_EXPR(x, y) takes the upper 32 bits and lower 32 bits (expressed in
  * hexadecimal, with the latter not including a leading '0x'), and expands
  * into an unsigned 64-bit integer constant for c99 and greater. For C89/c90,
- * it instead exapands into an unsigned 64-bit integer constant _expression_,
- * assuming that a 64-bit type exists.
+ * it first tries to use unsigned int/long suffixes if either of these are
+ * capable of representing 64-bit types; otherwise, it exapands into an
+ * unsigned 64-bit integer constant _expression_, assuming that a 64-bit type
+ * exists as a compiler extension and is typedef'd as uint64_t in stdint.h,
+ * whether provided by the compiler vendor or by the developer.
  *
  * Example:
  *   U64_EXPR(0x12345678,DEADBEEF) == UINT64_C(0x12345678DEADBEEF) */
