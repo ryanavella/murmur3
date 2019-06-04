@@ -137,9 +137,9 @@ typedef uint64_t     uword64;
 #define fmix32(h)         \
     do {                  \
         h ^= h >> 16;     \
-        h *= 0x85ebca6bu; \
+        h *= 0x85ebca6b;  \
         h ^= h >> 13;     \
-        h *= 0xc2b2ae35u; \
+        h *= 0xc2b2ae35;  \
         h ^= h >> 16;     \
     } while(0)
 
@@ -152,7 +152,7 @@ typedef uint64_t     uword64;
         h ^= h >> 33;                       \
     } while(0)
 
-void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t out[1]) {
+void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out) {
     int i;
     const unsigned len_body = len & ~0x03u;
     const unsigned len_tail = len &  0x03;
@@ -211,7 +211,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
     *(uint32_t *)out = (uint32_t)ENDIAN_L_32(h1);
 }
 
-void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t out[4]) {
+void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out) {
     int i;
     const unsigned len_body = len & ~0x0fu;
     const unsigned len_tail = len &  0x0f;
@@ -290,7 +290,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k4 ^= (uword32)tail[13] << 8;
             /* fall-through */
         case 13:
-            k4 ^= (uword32)tail[12] << 0;
+            k4 ^= (uword32)tail[12];
             k4 *= c4;
             k4  = ROTL32(k4, 18);
             k4 *= c1;
@@ -306,7 +306,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k3 ^= (uword32)tail[9] << 8;
             /* fall-through */
         case 9:
-            k3 ^= (uword32)tail[8] << 0;
+            k3 ^= (uword32)tail[8];
             k3 *= c3;
             k3  = ROTL32(k3, 17);
             k3 *= c4;
@@ -322,7 +322,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k2 ^= (uword32)tail[5] << 8;
             /* fall-through */
         case 5:
-            k2 ^= (uword32)tail[4] << 0;
+            k2 ^= (uword32)tail[4];
             k2 *= c2;
             k2  = ROTL32(k2, 16);
             k2 *= c3;
@@ -338,7 +338,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k1 ^= (uword32)tail[1] << 8;
             /* fall-through */
         case 1:
-            k1 ^= (uword32)tail[0] << 0;
+            k1 ^= (uword32)tail[0];
             k1 *= c1;
             k1  = ROTL32(k1, 15);
             k1 *= c2;
@@ -377,7 +377,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
     ((uint32_t *)out)[3] = (uint32_t)ENDIAN_L_32(h4);
 }
 
-void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uint64_t out[2]) {
+void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, void *out) {
     int i;
     const unsigned len_body = len & ~0x0fu;
     const unsigned len_tail = len &  0x0f;
@@ -444,7 +444,7 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
             k2 ^= (uword64)tail[9] << 8;
             /* fall-through */
         case 9:
-            k2 ^= (uword64)tail[8] << 0;
+            k2 ^= (uword64)tail[8];
             k2 *= c2;
             k2  = ROTL64(k2, 33);
             k2 *= c1;
@@ -472,7 +472,7 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
             k1 ^= (uword64)tail[1] << 8;
             /* fall-through */
         case 1:
-            k1 ^= (uword64)tail[0] << 0;
+            k1 ^= (uword64)tail[0];
             k1 *= c1;
             k1  = ROTL64(k1, 31);
             k1 *= c2;
