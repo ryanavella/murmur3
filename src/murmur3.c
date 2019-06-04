@@ -134,22 +134,22 @@ typedef uint64_t     uword64;
 #define ROTL64(x, r) (((uword64)(x) << (r)) | ((uword64)(x) >> (64 - (r))))
 
 /* Finalization mix - force all bits of a hash block to avalanche */
-#define fmix32(h)              \
-    do {                       \
-        h ^= (uword32)h >> 16; \
-        h *= 0x85ebca6bu;      \
-        h ^= (uword32)h >> 13; \
-        h *= 0xc2b2ae35u;      \
-        h ^= (uword32)h >> 16; \
+#define fmix32(h)         \
+    do {                  \
+        h ^= h >> 16;     \
+        h *= 0x85ebca6bu; \
+        h ^= h >> 13;     \
+        h *= 0xc2b2ae35u; \
+        h ^= h >> 16;     \
     } while(0)
 
 #define fmix64(h)                           \
     do {                                    \
-        h ^= (uword64)h >> 33;              \
+        h ^= h >> 33;                       \
         h *= U64_EXPR(0xff51afd7,ed558ccd); \
-        h ^= (uword64)h >> 33;              \
+        h ^= h >> 33;                       \
         h *= U64_EXPR(0xc4ceb9fe,1a85ec53); \
-        h ^= (uword64)h >> 33;              \
+        h ^= h >> 33;                       \
     } while(0)
 
 void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t out[1]) {
@@ -161,9 +161,9 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
     const uword32 c1 = 0xcc9e2d51;
     const uword32 c2 = 0x1b873593;
 
-    uint32_t h1 = seed;
+    uword32 h1 = seed;
 
-    uint32_t k1;
+    uword32 k1;
 
     const uint8_t  *data   = (const uint8_t  *)key;
     const uint32_t *blocks = (const uint32_t *)(data + len_body);
@@ -180,7 +180,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
 
         h1 ^= k1;
         h1  = ROTL32(h1, 13);
-        h1  = (uword32)h1*5 + 0xe6546b64;
+        h1  = h1*5 + 0xe6546b64;
     }
 
     /* tail */
@@ -189,7 +189,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
 
     switch(len_tail) {
         case 3:
-            k1 ^= (uword32)tail[2] << 16;
+            k1 = (uword32)tail[2] << 16;
             /* fall-through */
         case 2:
             k1 ^= (uword32)tail[1] << 8;
@@ -199,7 +199,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
             k1 *= c1;
             k1  = ROTL32(k1, 15);
             k1 *= c2;
-            h1 ^= (uword32)k1;
+            h1 ^= k1;
     }
 
     /* finalization */
@@ -208,7 +208,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, uint32_t seed, uint32_t o
 
     fmix32(h1);
 
-    *(uint32_t *)out = ENDIAN_L_32(h1);
+    *(uint32_t *)out = (uint32_t)ENDIAN_L_32(h1);
 }
 
 void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t out[4]) {
@@ -217,17 +217,17 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
     const unsigned len_tail = len &  0x0f;
     const int      nblocks  = len >> 4;
 
-    const uword32 c1 = 0x239b961bu;
-    const uword32 c2 = 0xab0e9789u;
-    const uword32 c3 = 0x38b34ae5u;
-    const uword32 c4 = 0xa1e38b93u;
+    const uword32 c1 = 0x239b961b;
+    const uword32 c2 = 0xab0e9789;
+    const uword32 c3 = 0x38b34ae5;
+    const uword32 c4 = 0xa1e38b93;
 
-    uint32_t h1 = seed;
-    uint32_t h2 = seed;
-    uint32_t h3 = seed;
-    uint32_t h4 = seed;
+    uword32 h1 = seed;
+    uword32 h2 = seed;
+    uword32 h3 = seed;
+    uword32 h4 = seed;
 
-    uint32_t k1, k2, k3, k4;
+    uword32 k1, k2, k3, k4;
 
     const uint8_t  *data   = (const uint8_t  *)key;
     const uint32_t *blocks = (const uint32_t *)(data + len_body);
@@ -236,46 +236,46 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
     /* body */
 
     for(i = -nblocks; i; i++) {
-        k1 = getblock32(blocks, i*4+0);
-        k2 = getblock32(blocks, i*4+1);
-        k3 = getblock32(blocks, i*4+2);
-        k4 = getblock32(blocks, i*4+3);
+        k1 = getblock32(blocks, i*4 + 0);
+        k2 = getblock32(blocks, i*4 + 1);
+        k3 = getblock32(blocks, i*4 + 2);
+        k4 = getblock32(blocks, i*4 + 3);
 
         k1 *= c1;
         k1  = ROTL32(k1, 15);
         k1 *= c2;
-        h1 ^= (uword32)k1;
+        h1 ^= k1;
 
         h1  = ROTL32(h1, 19);
-        h1 += (uword32)h2;
-        h1  = (uword32)h1*5 + 0x561ccd1b;
+        h1 += h2;
+        h1  = h1*5 + 0x561ccd1b;
 
         k2 *= c2;
         k2  = ROTL32(k2, 16);
         k2 *= c3;
-        h2 ^= (uword32)k2;
+        h2 ^= k2;
 
         h2  = ROTL32(h2, 17);
-        h2 += (uword32)h3;
-        h2  = (uword32)h2*5 + 0x0bcaa747u;
+        h2 += h3;
+        h2  = h2*5 + 0x0bcaa747;
 
         k3 *= c3;
         k3  = ROTL32(k3, 17);
         k3 *= c4;
-        h3 ^= (uword32)k3;
+        h3 ^= k3;
 
         h3  = ROTL32(h3, 15);
-        h3 += (uword32)h4;
-        h3  = (uword32)h3*5 + 0x96cd1c35;
+        h3 += h4;
+        h3  = h3*5 + 0x96cd1c35;
 
         k4 *= c4;
         k4  = ROTL32(k4, 18);
         k4 *= c1;
-        h4 ^= (uword32)k4;
+        h4 ^= k4;
 
         h4  = ROTL32(h4, 13);
-        h4 += (uword32)h1;
-        h4  = (uword32)h4*5 + 0x32ac3b17;
+        h4 += h1;
+        h4  = h4*5 + 0x32ac3b17;
     }
 
     /* tail */
@@ -284,7 +284,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
 
     switch(len_tail) {
         case 15:
-            k4 ^= (uword32)tail[14] << 16;
+            k4 = (uword32)tail[14] << 16;
             /* fall-through */
         case 14:
             k4 ^= (uword32)tail[13] << 8;
@@ -294,10 +294,10 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k4 *= c4;
             k4  = ROTL32(k4, 18);
             k4 *= c1;
-            h4 ^= (uword32)k4;
+            h4 ^= k4;
             /* fall-through */
         case 12:
-            k3 ^= (uword32)tail[11] << 24;
+            k3 = (uword32)tail[11] << 24;
             /* fall-through */
         case 11:
             k3 ^= (uword32)tail[10] << 16;
@@ -310,10 +310,10 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k3 *= c3;
             k3  = ROTL32(k3, 17);
             k3 *= c4;
-            h3 ^= (uword32)k3;
+            h3 ^= k3;
             /* fall-through */
         case 8:
-            k2 ^= (uword32)tail[7] << 24;
+            k2 = (uword32)tail[7] << 24;
             /* fall-through */
         case 7:
             k2 ^= (uword32)tail[6] << 16;
@@ -326,10 +326,10 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k2 *= c2;
             k2  = ROTL32(k2, 16);
             k2 *= c3;
-            h2 ^= (uword32)k2;
+            h2 ^= k2;
             /* fall-through */
         case 4:
-            k1 ^= (uword32)tail[3] << 24;
+            k1 = (uword32)tail[3] << 24;
             /* fall-through */
         case 3:
             k1 ^= (uword32)tail[2] << 16;
@@ -342,7 +342,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
             k1 *= c1;
             k1  = ROTL32(k1, 15);
             k1 *= c2;
-            h1 ^= (uword32)k1;
+            h1 ^= k1;
     }
 
     /* finalization */
@@ -352,29 +352,29 @@ void MurmurHash3_x86_128(const void *key, unsigned len, uint32_t seed, uint32_t 
     h3 ^= len;
     h4 ^= len;
 
-    h1 += (uword32)h2;
-    h1 += (uword32)h3;
-    h1 += (uword32)h4;
-    h2 += (uword32)h1;
-    h3 += (uword32)h1;
-    h4 += (uword32)h1;
+    h1 += h2;
+    h1 += h3;
+    h1 += h4;
+    h2 += h1;
+    h3 += h1;
+    h4 += h1;
 
     fmix32(h1);
     fmix32(h2);
     fmix32(h3);
     fmix32(h4);
 
-    h1 += (uword32)h2;
-    h1 += (uword32)h3;
-    h1 += (uword32)h4;
-    h2 += (uword32)h1;
-    h3 += (uword32)h1;
-    h4 += (uword32)h1;
+    h1 += h2;
+    h1 += h3;
+    h1 += h4;
+    h2 += h1;
+    h3 += h1;
+    h4 += h1;
 
-    ((uint32_t *)out)[0] = ENDIAN_L_32(h1);
-    ((uint32_t *)out)[1] = ENDIAN_L_32(h2);
-    ((uint32_t *)out)[2] = ENDIAN_L_32(h3);
-    ((uint32_t *)out)[3] = ENDIAN_L_32(h4);
+    ((uint32_t *)out)[0] = (uint32_t)ENDIAN_L_32(h1);
+    ((uint32_t *)out)[1] = (uint32_t)ENDIAN_L_32(h2);
+    ((uint32_t *)out)[2] = (uint32_t)ENDIAN_L_32(h3);
+    ((uint32_t *)out)[3] = (uint32_t)ENDIAN_L_32(h4);
 }
 
 void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uint64_t out[2]) {
@@ -386,10 +386,10 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
     const uword64 c1 = U64_EXPR(0x87c37b91,114253d5);
     const uword64 c2 = U64_EXPR(0x4cf5ad43,2745937f);
 
-    uint64_t h1 = seed;
-    uint64_t h2 = seed;
+    uword64 h1 = seed;
+    uword64 h2 = seed;
 
-    uint64_t k1, k2;
+    uword64 k1, k2;
 
     const uint8_t  *data   = (const uint8_t  *)key;
     const uint64_t *blocks = (const uint64_t *)(data);
@@ -404,20 +404,20 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
         k1 *= c1;
         k1  = ROTL64(k1, 31);
         k1 *= c2;
-        h1 ^= (uword64)k1;
+        h1 ^= k1;
 
         h1  = ROTL64(h1, 27);
-        h1 += (uword64)h2;
-        h1  = (uword64)h1*5 + 0x52dce729;
+        h1 += h2;
+        h1  = h1*5 + 0x52dce729;
 
         k2 *= c2;
         k2  = ROTL64(k2, 33);
         k2 *= c1;
-        h2 ^= (uword64)k2;
+        h2 ^= k2;
 
         h2  = ROTL64(h2, 31);
-        h2 += (uword64)h1;
-        h2  = (uword64)h2*5 + 0x38495ab5;
+        h2 += h1;
+        h2  = h2*5 + 0x38495ab5;
     }
 
     /* tail */
@@ -426,57 +426,57 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
 
     switch(len_tail) {
         case 15:
-            k2 ^= ((uword64)tail[14]) << 48;
+            k2 = (uword64)tail[14] << 48;
             /* fall-through */
         case 14:
-            k2 ^= ((uword64)tail[13]) << 40;
+            k2 ^= (uword64)tail[13] << 40;
             /* fall-through */
         case 13:
-            k2 ^= ((uword64)tail[12]) << 32;
+            k2 ^= (uword64)tail[12] << 32;
             /* fall-through */
         case 12:
-            k2 ^= ((uword64)tail[11]) << 24;
+            k2 ^= (uword64)tail[11] << 24;
             /* fall-through */
         case 11:
-            k2 ^= ((uword64)tail[10]) << 16;
+            k2 ^= (uword64)tail[10] << 16;
             /* fall-through */
         case 10:
-            k2 ^= ((uword64)tail[9]) << 8;
+            k2 ^= (uword64)tail[9] << 8;
             /* fall-through */
         case 9:
-            k2 ^= ((uword64)tail[8]) << 0;
+            k2 ^= (uword64)tail[8] << 0;
             k2 *= c2;
             k2  = ROTL64(k2, 33);
             k2 *= c1;
-            h2 ^= (uword64)k2;
+            h2 ^= k2;
             /* fall-through */
         case 8:
-            k1 ^= ((uword64)tail[7]) << 56;
+            k1 = (uword64)tail[7] << 56;
             /* fall-through */
         case 7:
-            k1 ^= ((uword64)tail[6]) << 48;
+            k1 ^= (uword64)tail[6] << 48;
             /* fall-through */
         case 6:
-            k1 ^= ((uword64)tail[5]) << 40;
+            k1 ^= (uword64)tail[5] << 40;
             /* fall-through */
         case 5:
-            k1 ^= ((uword64)tail[4]) << 32;
+            k1 ^= (uword64)tail[4] << 32;
             /* fall-through */
         case 4:
-            k1 ^= ((uword64)tail[3]) << 24;
+            k1 ^= (uword64)tail[3] << 24;
             /* fall-through */
         case 3:
-            k1 ^= ((uword64)tail[2]) << 16;
+            k1 ^= (uword64)tail[2] << 16;
             /* fall-through */
         case 2:
-            k1 ^= ((uword64)tail[1]) << 8;
+            k1 ^= (uword64)tail[1] << 8;
             /* fall-through */
         case 1:
-            k1 ^= ((uword64)tail[0]) << 0;
+            k1 ^= (uword64)tail[0] << 0;
             k1 *= c1;
             k1  = ROTL64(k1, 31);
             k1 *= c2;
-            h1 ^= (uword64)k1;
+            h1 ^= k1;
     }
 
     /* finalization */
@@ -484,15 +484,15 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const uint32_t seed, uin
     h1 ^= len;
     h2 ^= len;
 
-    h1 += (uword64)h2;
-    h2 += (uword64)h1;
+    h1 += h2;
+    h2 += h1;
 
     fmix64(h1);
     fmix64(h2);
 
-    h1 += (uword64)h2;
-    h2 += (uword64)h1;
+    h1 += h2;
+    h2 += h1;
 
-    ((uint64_t *)out)[0] = ENDIAN_L_64(h1);
-    ((uint64_t *)out)[1] = ENDIAN_L_64(h2);
+    ((uint64_t *)out)[0] = (uint64_t)ENDIAN_L_64(h1);
+    ((uint64_t *)out)[1] = (uint64_t)ENDIAN_L_64(h2);
 }
