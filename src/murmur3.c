@@ -32,12 +32,6 @@ typedef unsigned int uword32;
 typedef uint32_t     uword32;
 #endif
 
-#if INT_CAN_HOLD_64_BITS
-typedef unsigned int uword64;
-#else
-typedef uint64_t     uword64;
-#endif
-
 /* U64_EXPR(x, y) takes the upper 32 bits and lower 32 bits (expressed in
  * hexadecimal, with the latter not including a leading '0x'), and expands
  * into an unsigned 64-bit integer constant for c99 and greater. For C89/c90,
@@ -56,7 +50,7 @@ typedef uint64_t     uword64;
 #elif LONG_CAN_HOLD_64_BITS
 #define U64_EXPR(x, y) x ## y ## ul
 #else
-#define U64_EXPR(x, y) (((uword64)(x ## ul) << 32) + 0x ## y ## ul)
+#define U64_EXPR(x, y) (((uint64_t)(x ## ul) << 32) + 0x ## y ## ul)
 #endif
 
 #if defined(_MIPSEL)           || \
@@ -112,15 +106,15 @@ typedef uint64_t     uword64;
 #endif
 
 #ifndef ENDIAN_L_64
-#define ENDIAN_L_64(x)                                     \
-    (((uword64)(x)<<56)                                  | \
-    (((uword64)(x)<<48) & U64_EXPR(0x00ff0000,00000000)) | \
-    (((uword64)(x)<<40) & U64_EXPR(0x0000ff00,00000000)) | \
-    (((uword64)(x)<<32) & U64_EXPR(0x000000ff,00000000)) | \
-    (((uword64)(x)>>32) & U64_EXPR(0x00000000,ff000000)) | \
-    (((uword64)(x)>>40) & U64_EXPR(0x00000000,00ff0000)) | \
-    (((uword64)(x)>>48) & U64_EXPR(0x00000000,0000ff00)) | \
-     ((uword64)(x)>>56))
+#define ENDIAN_L_64(x)                                      \
+    (((uint64_t)(x)<<56)                                  | \
+    (((uint64_t)(x)<<48) & U64_EXPR(0x00ff0000,00000000)) | \
+    (((uint64_t)(x)<<40) & U64_EXPR(0x0000ff00,00000000)) | \
+    (((uint64_t)(x)<<32) & U64_EXPR(0x000000ff,00000000)) | \
+    (((uint64_t)(x)>>32) & U64_EXPR(0x00000000,ff000000)) | \
+    (((uint64_t)(x)>>40) & U64_EXPR(0x00000000,00ff0000)) | \
+    (((uint64_t)(x)>>48) & U64_EXPR(0x00000000,0000ff00)) | \
+     ((uint64_t)(x)>>56))
 #endif
 
 #else
@@ -130,8 +124,8 @@ typedef uint64_t     uword64;
 #define getblock32(p, i) ENDIAN_L_32(p[i])
 #define getblock64(p, i) ENDIAN_L_64(p[i])
 
-#define ROTL32(x, r) (((uword32)(x) << (r)) | ((uword32)(x) >> (32 - (r))))
-#define ROTL64(x, r) (((uword64)(x) << (r)) | ((uword64)(x) >> (64 - (r))))
+#define ROTL32(x, r) (((uword32)(x)  << (r)) | ((uword32)(x)  >> (32 - (r))))
+#define ROTL64(x, r) (((uint64_t)(x) << (r)) | ((uint64_t)(x) >> (64 - (r))))
 
 /* Finalization mix - force all bits of a hash block to avalanche */
 #define fmix32(h)         \
@@ -383,13 +377,13 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, voi
     const unsigned len_tail = len &  0x0f;
     const int      nblocks  = len >> 4;
 
-    const uword64 c1 = U64_EXPR(0x87c37b91,114253d5);
-    const uword64 c2 = U64_EXPR(0x4cf5ad43,2745937f);
+    const uint64_t c1 = U64_EXPR(0x87c37b91,114253d5);
+    const uint64_t c2 = U64_EXPR(0x4cf5ad43,2745937f);
 
-    uword64 h1 = seed;
-    uword64 h2 = seed;
+    uint64_t h1 = seed;
+    uint64_t h2 = seed;
 
-    uword64 k1, k2;
+    uint64_t k1, k2;
 
     const uint8_t  *data   = (const uint8_t  *)key;
     const uint64_t *blocks = (const uint64_t *)(data);
@@ -426,53 +420,53 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, voi
 
     switch(len_tail) {
         case 15:
-            k2 = (uword64)tail[14] << 48;
+            k2 = (uint64_t)tail[14] << 48;
             /* fall-through */
         case 14:
-            k2 ^= (uword64)tail[13] << 40;
+            k2 ^= (uint64_t)tail[13] << 40;
             /* fall-through */
         case 13:
-            k2 ^= (uword64)tail[12] << 32;
+            k2 ^= (uint64_t)tail[12] << 32;
             /* fall-through */
         case 12:
-            k2 ^= (uword64)tail[11] << 24;
+            k2 ^= (uint64_t)tail[11] << 24;
             /* fall-through */
         case 11:
-            k2 ^= (uword64)tail[10] << 16;
+            k2 ^= (uint64_t)tail[10] << 16;
             /* fall-through */
         case 10:
-            k2 ^= (uword64)tail[9] << 8;
+            k2 ^= (uint64_t)tail[9] << 8;
             /* fall-through */
         case 9:
-            k2 ^= (uword64)tail[8];
+            k2 ^= (uint64_t)tail[8];
             k2 *= c2;
             k2  = ROTL64(k2, 33);
             k2 *= c1;
             h2 ^= k2;
             /* fall-through */
         case 8:
-            k1 = (uword64)tail[7] << 56;
+            k1 = (uint64_t)tail[7] << 56;
             /* fall-through */
         case 7:
-            k1 ^= (uword64)tail[6] << 48;
+            k1 ^= (uint64_t)tail[6] << 48;
             /* fall-through */
         case 6:
-            k1 ^= (uword64)tail[5] << 40;
+            k1 ^= (uint64_t)tail[5] << 40;
             /* fall-through */
         case 5:
-            k1 ^= (uword64)tail[4] << 32;
+            k1 ^= (uint64_t)tail[4] << 32;
             /* fall-through */
         case 4:
-            k1 ^= (uword64)tail[3] << 24;
+            k1 ^= (uint64_t)tail[3] << 24;
             /* fall-through */
         case 3:
-            k1 ^= (uword64)tail[2] << 16;
+            k1 ^= (uint64_t)tail[2] << 16;
             /* fall-through */
         case 2:
-            k1 ^= (uword64)tail[1] << 8;
+            k1 ^= (uint64_t)tail[1] << 8;
             /* fall-through */
         case 1:
-            k1 ^= (uword64)tail[0];
+            k1 ^= (uint64_t)tail[0];
             k1 *= c1;
             k1  = ROTL64(k1, 31);
             k1 *= c2;
