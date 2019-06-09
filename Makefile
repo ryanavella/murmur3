@@ -26,10 +26,6 @@ $(DIR_BIN)/$(TARGET): $(SRCS:%.c=%.o)
 
 -include $(SRCS:%.c=%.d)
 
-.PHONY: format
-format:
-	clang-format -i *.c *.h
-
 .PHONY: clean
 clean:
 	$(RM) $(OBJSCLEAN)
