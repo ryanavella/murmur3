@@ -166,7 +166,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out)
     /* body */
 
     for(i = -nblocks; i; i++) {
-        k1 = getblock32(blocks, i);
+        k1  = getblock32(blocks, i);
 
         k1 *= c1;
         k1  = ROTL32(k1, 15);
@@ -183,7 +183,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out)
 
     switch(len_tail) {
         case 3:
-            k1 = (uword32)tail[2] << 16;
+            k1  = (uword32)tail[2] << 16;
             /* fall-through */
         case 2:
             k1 ^= (uword32)tail[1] << 8;
@@ -206,7 +206,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out)
 }
 
 void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out) {
-    int i;
+    int i, j;
     const unsigned len_body = len & ~0x0fu;
     const unsigned len_tail = len &  0x0f;
     const int      nblocks  = len >> 4;
@@ -230,10 +230,11 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
     /* body */
 
     for(i = -nblocks; i; i++) {
-        k1 = getblock32(blocks, i*4 + 0);
-        k2 = getblock32(blocks, i*4 + 1);
-        k3 = getblock32(blocks, i*4 + 2);
-        k4 = getblock32(blocks, i*4 + 3);
+        j  = i << 2;
+        k1 = getblock32(blocks, j + 0);
+        k2 = getblock32(blocks, j + 1);
+        k3 = getblock32(blocks, j + 2);
+        k4 = getblock32(blocks, j + 3);
 
         k1 *= c1;
         k1  = ROTL32(k1, 15);
@@ -278,7 +279,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
 
     switch(len_tail) {
         case 15:
-            k4 = (uword32)tail[14] << 16;
+            k4  = (uword32)tail[14] << 16;
             /* fall-through */
         case 14:
             k4 ^= (uword32)tail[13] << 8;
@@ -291,7 +292,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
             h4 ^= k4;
             /* fall-through */
         case 12:
-            k3 = (uword32)tail[11] << 24;
+            k3  = (uword32)tail[11] << 24;
             /* fall-through */
         case 11:
             k3 ^= (uword32)tail[10] << 16;
@@ -307,7 +308,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
             h3 ^= k3;
             /* fall-through */
         case 8:
-            k2 = (uword32)tail[7] << 24;
+            k2  = (uword32)tail[7] << 24;
             /* fall-through */
         case 7:
             k2 ^= (uword32)tail[6] << 16;
@@ -323,7 +324,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
             h2 ^= k2;
             /* fall-through */
         case 4:
-            k1 = (uword32)tail[3] << 24;
+            k1  = (uword32)tail[3] << 24;
             /* fall-through */
         case 3:
             k1 ^= (uword32)tail[2] << 16;
@@ -372,7 +373,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
 }
 
 void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, void *out) {
-    int i;
+    int i, j;
     const unsigned len_body = len & ~0x0fu;
     const unsigned len_tail = len &  0x0f;
     const int      nblocks  = len >> 4;
@@ -392,8 +393,9 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, voi
     /* body */
 
     for(i = 0; i < nblocks; i++) {
-        k1 = getblock64(blocks, i*2 + 0);
-        k2 = getblock64(blocks, i*2 + 1);
+        j   = i << 1;
+        k1  = getblock64(blocks, j + 0);
+        k2  = getblock64(blocks, j + 1);
 
         k1 *= c1;
         k1  = ROTL64(k1, 31);
@@ -420,7 +422,7 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, voi
 
     switch(len_tail) {
         case 15:
-            k2 = (uint64_t)tail[14] << 48;
+            k2  = (uint64_t)tail[14] << 48;
             /* fall-through */
         case 14:
             k2 ^= (uint64_t)tail[13] << 40;
@@ -445,7 +447,7 @@ void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, voi
             h2 ^= k2;
             /* fall-through */
         case 8:
-            k1 = (uint64_t)tail[7] << 56;
+            k1  = (uint64_t)tail[7] << 56;
             /* fall-through */
         case 7:
             k1 ^= (uint64_t)tail[6] << 48;
