@@ -372,7 +372,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
     ((uint32_t *)out)[3] = (uint32_t)ENDIAN_L_32(h4);
 }
 
-void MurmurHash3_x64_128(const void *key, unsigned len, const unsigned seed, void *out) {
+void MurmurHash3_x64_128(const void *key, unsigned len, unsigned seed, void *out) {
     int i, j;
     const unsigned len_body = len & ~0x0fu;
     const unsigned len_tail = len &  0x0f;

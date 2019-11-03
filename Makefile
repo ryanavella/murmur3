@@ -7,31 +7,12 @@ DEBUG := -g
 WARNINGS := -Wall -Wextra -Werror -Wpedantic
 WARNINGS += -Wno-cast-align -Wno-unused-macros
 
-DIR_SRC := ./src
-DIR_INCL := ./include
-DIR_BIN := ./bin
-INCLUDE := -I$(DIR_SRC) -I$(DIR_INCL)
+CFLAGS := -std=$(CSTD) $(OPT) $(DEBUG) -I./src $(WARNINGS)
 
-SRCS      := $(shell find $(DIR_SRC) -name "*.c")
-OBJSCLEAN := $(shell find $(DIR_SRC) -name "*.o")
-DEPSCLEAN := $(shell find $(DIR_SRC) -name "*.d")
-
-CFLAGS := -std=$(CSTD) $(OPT) $(DEBUG) $(INCLUDE) $(WARNINGS) -MMD -MP
-
-.PHONY: all
-all: $(DIR_BIN)/$(TARGET)
-
-$(DIR_BIN)/$(TARGET): $(SRCS:%.c=%.o)
-	$(CC) $(CFLAGS) $^ -o $@
-
--include $(SRCS:%.c=%.d)
+all:
+	$(CC) $(CFLAGS) ./src/murmur3.c ./src/murmur3_test.c -o ./bin/$(TARGET)
 
 .PHONY: clean
 clean:
 	$(RM) $(OBJSCLEAN)
-	$(RM) $(DIR_BIN)/*.exe
-	$(RM) $(DIR_BIN)/$(TARGET)
-
-.PHONY: veryclean
-veryclean: clean
-	$(RM) $(DEPSCLEAN)
+	$(RM) ./bin/*
