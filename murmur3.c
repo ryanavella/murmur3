@@ -17,11 +17,19 @@
  *   developer must supply their own stdint.h header if none is provided by
  *   their compiler vendor. */
 
-#include "murmur3.h"
-
+#include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
 
+#include "murmur3.h"
+
+#if (SIZE_MAX > UINT32_MAX)
+typedef int64_t ssize_type;
+#elif (SIZE_MAX > UINT16_MAX)
+typedef int32_t ssize_type;
+#else
+typedef int ssize_type;
+#endif
 
 #if defined(_MIPSEL)           || \
     defined(_M_AMD64)          || \
@@ -113,11 +121,11 @@
         h ^= h >> 33;            \
     } while(0)
 
-void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out) {
-    int i;
-    const unsigned len_body = len & ~0x03u;
-    const unsigned len_tail = len &  0x03;
-    const int      nblocks  = len >> 2;
+void MurmurHash3_x86_32(const void *key, size_t len, unsigned seed, void *out) {
+    ssize_type i;
+    const size_t     len_body = len & ~0x03;
+    const char       len_tail = len &  0x03;
+    const ssize_type nblocks  = len >> 2;
 
     const uint32_t c1 = 0xcc9e2d51;
     const uint32_t c2 = 0x1b873593;
@@ -148,7 +156,7 @@ void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out)
 
     k1 = 0;
 
-    switch(len_tail) {
+    switch (len_tail) {
         case 3:
             k1  = (uint32_t)tail[2] << 16;
             /* fall-through */
@@ -172,11 +180,11 @@ void MurmurHash3_x86_32(const void *key, unsigned len, unsigned seed, void *out)
     *(uint32_t *)out = (uint32_t)ENDIAN_L_32(h1);
 }
 
-void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out) {
-    int i, j;
-    const unsigned len_body = len & ~0x0f;
-    const unsigned len_tail = len &  0x0f;
-    const int      nblocks  = len >> 4;
+void MurmurHash3_x86_128(const void *key, size_t len, unsigned seed, void *out) {
+    ssize_type i, j;
+    const unsigned   len_body = len & ~0x0f;
+    const char       len_tail = len &  0x0f;
+    const ssize_type nblocks  = len >> 4;
 
     const uint32_t c1 = 0x239b961b;
     const uint32_t c2 = 0xab0e9789;
@@ -244,7 +252,7 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
 
     k1 = k2 = k3 = k4 = 0;
 
-    switch(len_tail) {
+    switch (len_tail) {
         case 15:
             k4  = (uint32_t)tail[14] << 16;
             /* fall-through */
@@ -339,11 +347,11 @@ void MurmurHash3_x86_128(const void *key, unsigned len, unsigned seed, void *out
     ((uint32_t *)out)[3] = (uint32_t)ENDIAN_L_32(h4);
 }
 
-void MurmurHash3_x64_128(const void *key, unsigned len, unsigned seed, void *out) {
-    int i, j;
-    const unsigned len_body = len & ~0x0fu;
-    const unsigned len_tail = len &  0x0f;
-    const int      nblocks  = len >> 4;
+void MurmurHash3_x64_128(const void *key, size_t len, unsigned seed, void *out) {
+    ssize_type i, j;
+    const unsigned   len_body = len & ~0x0f;
+    const char       len_tail = len &  0x0f;
+    const ssize_type nblocks  = len >> 4;
 
     const uint64_t c1 = 0x87c37b91114253d5;
     const uint64_t c2 = 0x4cf5ad432745937f;
@@ -387,7 +395,7 @@ void MurmurHash3_x64_128(const void *key, unsigned len, unsigned seed, void *out
 
     k1 = k2 = 0;
 
-    switch(len_tail) {
+    switch (len_tail) {
         case 15:
             k2  = (uint64_t)tail[14] << 48;
             /* fall-through */
